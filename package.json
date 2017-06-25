@@ -1,0 +1,19 @@
+{
+  "name": "game",
+  "version": "1.0.0",
+  "description": "testing multiplayer game",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./server/index.js"
+  },
+  "keywords": [
+    "game",
+    "socket"
+  ],
+  "author": "tonis",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "ws": "^3.0.0"
+  }
+}
