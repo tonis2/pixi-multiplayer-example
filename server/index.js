@@ -17,11 +17,13 @@ app.use("/static", express.static("app"));
 
 const PORT = 3000;
 const HOST = "127.0.0.1";
+
+//Holds the players inputs
 const playersData = {
   players: {}
 };
 
-// Broadcast to all.
+// Broadcast to all connections.
 wss.broadcast = data => {
   wss.clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
@@ -30,21 +32,36 @@ wss.broadcast = data => {
   });
 };
 
+function getPlayersData() {
+  return JSON.stringify({
+    timestamp: Date.now,
+    data: Array.from(Object.values(playersData.players))
+  });
+}
+
+function createPlayer() {
+  const player = {
+    id: Math.random().toString(36).substring(7),
+    x: 100,
+    y: 100
+  };
+  playersData.players[player.id] = player;
+  return player.id;
+}
+
 setInterval(() => {
-  playersData.timestamp = new Date();
-  wss.broadcast(JSON.stringify(playersData));
-}, 500);
+  playersData.timestamp = Date.now();
+  wss.broadcast(getPlayersData());
+}, 200);
 
 wss.on("connection", ws => {
-  wss.broadcast(JSON.stringify(playersData));
+  const player = createPlayer();
+  ws.id = player;
   ws.on("message", data => {
     const message = JSON.parse(data);
     switch (message.type) {
       case "input":
         playersData.players[message.data.id] = message.data;
-        if (!ws.id) {
-          ws.id = message.data.id;
-        }
         break;
     }
   });
@@ -57,4 +74,3 @@ wss.on("connection", ws => {
 app.listen(PORT);
 
 console.log("Server running at " + HOST + ":" + PORT + "/");
-// console.log('Debug: ' + config.main.debug);
