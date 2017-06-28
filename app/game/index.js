@@ -15,7 +15,6 @@ function createPlayer(playerdata) {
 }
 
 function interPolate() {
-
   if (packetsArray.length < 5) return;
   const past = 100,
     now = Date.now(),
@@ -35,8 +34,6 @@ function interPolate() {
     const t1Players = packetsArray[0].data,
       t2Players = packetsArray[1].data;
     t1Players.forEach(player => {
-      const cords1 = { x: rocketStats.x, y: rocketStats.y };
-      editPlayerPosition(player, cords1);
       const t2Player = t2Players.filter(item => player.id === item.id)[0];
       if (!t2Player) return;
 
@@ -45,7 +42,7 @@ function interPolate() {
       const cords = { x: interpX, y: interpY };
       if (rocketStats.id !== player.id) {
         editPlayerPosition(player, cords);
-      } 
+      }
     });
     packetsArray.slice();
   } 
@@ -70,13 +67,11 @@ function getCurrentPlayerSprite(id) {
 
 function sendData() {
   const currentPlayerStats = getCurrentPlayerSprite(rocketStats.id);
+  currentPlayerStats.x = rocketStats.x;
+  currentPlayerStats.y = rocketStats.y;
   socket.send({
     type: "input",
-    data: {
-      x: currentPlayerStats.x,
-      id: rocketStats.id,
-      y: currentPlayerStats.y
-    }
+    data: rocketStats
   });
 }
 
