@@ -7,11 +7,7 @@ const app = new PIXI.Application(800, 600, { backgroundColor: 0x1099bb });
 const Listener = new KeyListener();
 let packetsArray = [];
 
-const rocketStats = {
-  id: Math.random().toString(36).substring(7),
-  x: 100,
-  y: 100
-};
+let rocketStats = null;
 
 function createPlayer(playerdata) {
   const rocket = new Rocket(playerdata);
@@ -35,12 +31,13 @@ function interPolate() {
       // fractional distance between t1 and t2
       ratio = portion / total;
 
-    const t1Players = packetsArray[0].players,
-      t2Players = packetsArray[1].players;
-
-    Object.values(t1Players).forEach(player => {
-      const interpX = lerp(t2Players[player.id].x, player.x, 0.5);
-      const interpY = lerp(t2Players[player.id].y, player.y, 0.5);
+    const t1Players = packetsArray[0].data,
+      t2Players = packetsArray[1].data;
+    t1Players.forEach(player => {
+      const t2Player = t2Players.filter((item) => player.id === item.id)[0];
+      if(!t2Player) return
+      const interpX = lerp(t2Player.x, player.x, 0.5);
+      const interpY = lerp(t2Player.y, player.y, 0.5);
       const cords = { x: interpX, y: interpY };
       if (rocketStats.id !== player.id) editPlayerPosition(player, cords);
     });
@@ -50,8 +47,15 @@ function interPolate() {
 
 function editPlayerPosition(player, cords) {
   const playerSprite = getCurrentPlayerSprite(player.id);
-  playerSprite.x = cords.x;
-  playerSprite.y = cords.y;
+  if(!playerSprite) {
+    createPlayer(player);
+    const newPlayerSprite = getCurrentPlayerSprite(player.id);
+    newPlayerSprite.x = cords.x;
+    newPlayerSprite.y = cords.y;
+  } else {
+    playerSprite.x = cords.x;
+    playerSprite.y = cords.y;
+  }
 }
 
 function getCurrentPlayerSprite(id) {
@@ -72,19 +76,23 @@ function sendData() {
   });
 }
 
-socket.connection.onopen = () => {
-  createPlayer(rocketStats);
-  sendData();
-};
-
 socket.connection.onmessage = signal => {
   const payload = JSON.parse(signal.data);
-  console.log(payload);
-  packetsArray.unshift(payload);
+  switch(payload.type) {
+    case "init":
+        rocketStats = payload.data;
+        createPlayer(payload.data);
+    break;
+    case "update":
+      packetsArray.unshift(payload);
+    break;
+  }
 };
 
 app.ticker.add(delta => {
-  interPolate();
+  if(rocketStats) {
+    interPolate();
+  }
   Listener.on("W", () => {
     rocketStats.y -= 4;
   });

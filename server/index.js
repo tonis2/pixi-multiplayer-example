@@ -34,7 +34,8 @@ wss.broadcast = data => {
 
 function getPlayersData() {
   return JSON.stringify({
-    timestamp: Date.now,
+    type: "update",
+    timestamp: Date.now(),
     data: Array.from(Object.values(playersData.players))
   });
 }
@@ -46,17 +47,21 @@ function createPlayer() {
     y: 100
   };
   playersData.players[player.id] = player;
-  return player.id;
+  return player;
 }
 
 setInterval(() => {
-  playersData.timestamp = Date.now();
   wss.broadcast(getPlayersData());
 }, 200);
 
 wss.on("connection", ws => {
   const player = createPlayer();
-  ws.id = player;
+  ws.id = player.id;
+  ws.send(JSON.stringify({
+    type: "init",
+    timestamp: Date.now(),
+    data: player
+  }));
   ws.on("message", data => {
     const message = JSON.parse(data);
     switch (message.type) {
