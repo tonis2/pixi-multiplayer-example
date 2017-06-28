@@ -52,7 +52,7 @@ function createPlayer() {
 
 setInterval(() => {
   wss.broadcast(getPlayersData());
-}, 200);
+}, 100);
 
 wss.on("connection", ws => {
   const player = createPlayer();

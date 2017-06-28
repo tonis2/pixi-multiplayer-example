@@ -15,6 +15,7 @@ function createPlayer(playerdata) {
 }
 
 function interPolate() {
+
   if (packetsArray.length < 5) return;
   const past = 100,
     now = Date.now(),
@@ -34,20 +35,25 @@ function interPolate() {
     const t1Players = packetsArray[0].data,
       t2Players = packetsArray[1].data;
     t1Players.forEach(player => {
-      const t2Player = t2Players.filter((item) => player.id === item.id)[0];
-      if(!t2Player) return
-      const interpX = lerp(t2Player.x, player.x, 0.5);
-      const interpY = lerp(t2Player.y, player.y, 0.5);
+      const cords1 = { x: rocketStats.x, y: rocketStats.y };
+      editPlayerPosition(player, cords1);
+      const t2Player = t2Players.filter(item => player.id === item.id)[0];
+      if (!t2Player) return;
+
+      const interpX = lerp(t2Player.x, player.x, ratio);
+      const interpY = lerp(t2Player.y, player.y, ratio);
       const cords = { x: interpX, y: interpY };
-      if (rocketStats.id !== player.id) editPlayerPosition(player, cords);
+      if (rocketStats.id !== player.id) {
+        editPlayerPosition(player, cords);
+      } 
     });
     packetsArray.slice();
-  }
+  } 
 }
 
 function editPlayerPosition(player, cords) {
   const playerSprite = getCurrentPlayerSprite(player.id);
-  if(!playerSprite) {
+  if (!playerSprite) {
     createPlayer(player);
     const newPlayerSprite = getCurrentPlayerSprite(player.id);
     newPlayerSprite.x = cords.x;
@@ -64,8 +70,6 @@ function getCurrentPlayerSprite(id) {
 
 function sendData() {
   const currentPlayerStats = getCurrentPlayerSprite(rocketStats.id);
-  currentPlayerStats.x = rocketStats.x;
-  currentPlayerStats.y = rocketStats.y;
   socket.send({
     type: "input",
     data: {
@@ -78,19 +82,19 @@ function sendData() {
 
 socket.connection.onmessage = signal => {
   const payload = JSON.parse(signal.data);
-  switch(payload.type) {
+  switch (payload.type) {
     case "init":
-        rocketStats = payload.data;
-        createPlayer(payload.data);
-    break;
+      rocketStats = payload.data;
+      createPlayer(payload.data);
+      break;
     case "update":
       packetsArray.unshift(payload);
-    break;
+      break;
   }
 };
 
 app.ticker.add(delta => {
-  if(rocketStats) {
+  if (rocketStats) {
     interPolate();
   }
   Listener.on("W", () => {

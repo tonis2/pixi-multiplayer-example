@@ -1,6 +1,6 @@
 export default class Socket {
   constructor() {
-    this.connection = new WebSocket("ws://127.0.0.1:3010");
+    this.connection = new WebSocket("ws://85.184.249.97:3010");
     this.connection.onerror = this.error.bind(this);
   }
 
