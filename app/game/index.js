@@ -16,7 +16,7 @@ function createPlayer(playerdata) {
 
 function interPolate() {
   if (packetsArray.length < 5) return;
-  const past = 100,
+  const past = 140,
     now = Date.now(),
     renderTime = now - past;
 
@@ -45,9 +45,8 @@ function interPolate() {
       }
     });
     packetsArray.slice();
-  } 
+  }
 }
-
 function editPlayerPosition(player, cords) {
   const playerSprite = getCurrentPlayerSprite(player.id);
   if (!playerSprite) {
@@ -94,21 +93,23 @@ app.ticker.add(delta => {
   }
   Listener.on("W", () => {
     rocketStats.y -= 4;
+    sendData();
   });
 
   Listener.on("S", () => {
     rocketStats.y += 4;
+    sendData();
   });
 
   Listener.on("A", () => {
     rocketStats.x -= 4;
+    sendData();
   });
 
   Listener.on("D", () => {
     rocketStats.x += 4;
+    sendData();
   });
-
-  sendData();
 });
 
 document.getElementById("game").appendChild(app.view);
