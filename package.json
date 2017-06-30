@@ -4,7 +4,8 @@
   "description": "testing multiplayer game",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./server/index.js"
+    "startdev": "nodemon ./server/index.js",
+    "start":"node ./server/index.js"
   },
   "keywords": [
     "game",
