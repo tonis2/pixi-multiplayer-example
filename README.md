@@ -5,4 +5,5 @@ Example how to make multiplayer game with pixi.js, node.js.
 Also uses client interpolation to prevent laggy movement.
 
 Tried to keep as simple as i could.
-To start npm install and npm run start
+
+To start use  `npm install` and then `npm run start`
