@@ -8,4 +8,4 @@ Tried to keep as simple as i could.
 
 To start use  `npm install` and then `npm run start`
 
-And then open browser at http://127.0.0.1:3000
+And then open browser at http://127.0.0.1:3000, you can then open this tab multiple times to spawn a new player.
