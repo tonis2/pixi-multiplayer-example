@@ -2,7 +2,7 @@
 
 Example how to make multiplayer game with pixi.js, node.js.
 
-Also uses client interpolation to prevent laggy movement when there are server delays present.
+Also uses [client interpolation](https://www.gabrielgambetta.com/entity-interpolation.html) to prevent laggy movement when there are server delays present.
 
 Tried to keep as simple as i could.
 
